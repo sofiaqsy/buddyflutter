@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "503974172760",
+    "project_id": "buddyguide-8010e",
+    "storage_bucket": "buddyguide-8010e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:503974172760:android:f62114098c1b6ed815d22d",
+        "android_client_info": {
+          "package_name": "com.buddyguide.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtH6vaAI5rEyMGtu5_ZQk7XSbxSpBeg1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
