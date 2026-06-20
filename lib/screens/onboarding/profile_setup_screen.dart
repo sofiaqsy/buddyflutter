@@ -15,6 +15,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final _docCtrl    = TextEditingController();
   String _docType   = 'DNI';
   bool _loading     = false;
+  bool _accepted    = false;
 
   @override
   void dispose() {
@@ -25,6 +26,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
   Future<void> _next() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!_accepted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debes aceptar los Términos y Condiciones para continuar.')),
+      );
+      return;
+    }
     setState(() => _loading = true);
     try {
       await ApiClient.shared.patch('/users/${AuthService.shared.userId}', {
@@ -125,10 +132,62 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   validator: (v) => (v == null || v.trim().length < 6) ? 'Ingresa tu número de documento' : null,
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 28),
+
+                // T&C + Privacy acceptance
+                GestureDetector(
+                  onTap: () => setState(() => _accepted = !_accepted),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: _accepted ? BuddyColors.teal.withOpacity(0.06) : BuddyColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: _accepted ? BuddyColors.teal : BuddyColors.border,
+                        width: _accepted ? 1.5 : 1,
+                      ),
+                    ),
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        width: 22, height: 22,
+                        decoration: BoxDecoration(
+                          color: _accepted ? BuddyColors.teal : Colors.transparent,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: _accepted ? BuddyColors.teal : BuddyColors.border, width: 2,
+                          ),
+                        ),
+                        child: _accepted
+                            ? const Icon(Icons.check_rounded, size: 14, color: Colors.white)
+                            : null,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            style: BT.callout.copyWith(color: BuddyColors.ink),
+                            children: const [
+                              TextSpan(text: 'He leído y acepto los '),
+                              TextSpan(text: 'Términos y Condiciones', style: TextStyle(color: BuddyColors.teal, fontWeight: FontWeight.w600)),
+                              TextSpan(text: ', la '),
+                              TextSpan(text: 'Política de Privacidad', style: TextStyle(color: BuddyColors.teal, fontWeight: FontWeight.w600)),
+                              TextSpan(text: ' y el '),
+                              TextSpan(text: 'Código de Conducta', style: TextStyle(color: BuddyColors.teal, fontWeight: FontWeight.w600)),
+                              TextSpan(text: ' de Buddy. Confirmo que tengo 18 años o más.'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ]),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
 
                 ElevatedButton(
-                  onPressed: _loading ? null : _next,
+                  onPressed: (_loading || !_accepted) ? null : _next,
                   child: _loading
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                       : const Text('Continuar →'),

@@ -78,6 +78,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const PhoneScreen()), (_) => false);
   }
 
+  Future<void> _deleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: BuddyColors.surface,
+        title: const Text('¿Eliminar tu cuenta?', style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w700)),
+        content: const Text(
+          'Se eliminarán todos tus datos personales de forma permanente. Esta acción no se puede deshacer.',
+          style: TextStyle(fontFamily: 'Inter'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Eliminar', style: TextStyle(color: BuddyColors.error, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await ApiClient.shared.delete('/users/me');
+      await AuthService.shared.logout();
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const PhoneScreen()), (_) => false);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: BuddyColors.error),
+      );
+    }
+  }
+
   Future<void> _showDestinationPicker() async {
     final current = _buddyProfile?['destination_id'] as String?;
 
@@ -285,6 +318,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ]),
                     ),
 
+                  const SizedBox(height: 32),
+
+                  // ── Cuenta ───────────────────────────────────────────
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _logout,
+                      icon: const Icon(Icons.logout_rounded, size: 18),
+                      label: const Text('Cerrar sesión'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: BuddyColors.inkMuted,
+                        side: const BorderSide(color: BuddyColors.border),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        textStyle: const TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _deleteAccount,
+                      icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                      label: const Text('Eliminar mi cuenta'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: BuddyColors.error,
+                        side: BorderSide(color: BuddyColors.error.withOpacity(0.3)),
+                        backgroundColor: BuddyColors.error.withOpacity(0.04),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        textStyle: const TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 32),
                 ]),
               ),
