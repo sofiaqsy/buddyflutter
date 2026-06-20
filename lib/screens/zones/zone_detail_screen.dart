@@ -355,6 +355,22 @@ class _ZoneDetailScreenState extends State<ZoneDetailScreen> {
           ),
         ),
 
+        // ── Atribución OSM (requerida por licencia ODbL) ─────────────────
+        Positioned(
+          left: 4, bottom: 4,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: const Text(
+              '© OpenStreetMap contributors',
+              style: TextStyle(fontSize: 9, color: Colors.black87),
+            ),
+          ),
+        ),
+
         // ── Botones de zoom ───────────────────────────────────────────────
         Positioned(
           right: 12, bottom: 60,

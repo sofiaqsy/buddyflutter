@@ -736,39 +736,55 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               child: SizedBox(
                 height: 130,
-                child: FlutterMap(
-                  options: MapOptions(
-                    initialCenter: LatLng(lat, lng),
-                    initialZoom: 15,
-                    interactionOptions: const InteractionOptions(
-                      flags: InteractiveFlag.none, // disable scroll/zoom inside bubble
+                child: Stack(children: [
+                  FlutterMap(
+                    options: MapOptions(
+                      initialCenter: LatLng(lat, lng),
+                      initialZoom: 15,
+                      interactionOptions: const InteractionOptions(
+                        flags: InteractiveFlag.none, // disable scroll/zoom inside bubble
+                      ),
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.buddyapp.flutter',
+                      ),
+                      MarkerLayer(markers: [
+                        Marker(
+                          point: LatLng(lat, lng),
+                          width: 32,
+                          height: 32,
+                          child: Stack(alignment: Alignment.center, children: [
+                            Container(
+                              width: 22, height: 22,
+                              decoration: BoxDecoration(
+                                color: BuddyColors.teal,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 2.5),
+                                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 4)],
+                              ),
+                            ),
+                          ]),
+                        ),
+                      ]),
+                    ],
+                  ),
+                  Positioned(
+                    left: 4, bottom: 4,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      child: const Text(
+                        '© OpenStreetMap contributors',
+                        style: TextStyle(fontSize: 9, color: Colors.black87),
+                      ),
                     ),
                   ),
-                  children: [
-                    TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.buddyapp.flutter',
-                    ),
-                    MarkerLayer(markers: [
-                      Marker(
-                        point: LatLng(lat, lng),
-                        width: 32,
-                        height: 32,
-                        child: Stack(alignment: Alignment.center, children: [
-                          Container(
-                            width: 22, height: 22,
-                            decoration: BoxDecoration(
-                              color: BuddyColors.teal,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2.5),
-                              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 4)],
-                            ),
-                          ),
-                        ]),
-                      ),
-                    ]),
-                  ],
-                ),
+                ]),
               ),
             ),
             // Footer row
